@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="매일 도전할 수 있는 재미있는 퀴즈! 다양한 주제와 문제로 지식과 정보를 쌓고 점수를 기록하세요. 매일 퀴즈에 도전하고 성과를 나누세요. 전 세계인들이 함께 참여하는 퀴즈 도전 플랫폼.">
+  <meta name="keywords" content="퀴즈, 퀴즈 도전, 매일 퀴즈, 문제 풀이, 학습, 재미, 점수 기록, 도전, 지식, 글로벌 퀴즈, 일일 퀴즈">
+  <meta name="author" content="Web Developer">
+  <meta name="naver-site-verification" content="b366dbb6459aafa1c91f8f26b783724b86199d71" />
+  <title>매일 퀴즈 도전!</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      margin: 50px auto;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      flex: 1;
+    }
+    h1 {
+      color: #333;
+    }
+    p {
+      font-size: 18px;
+      color: #666;
+    }
+    .question-container {
+      margin-top: 30px;
+    }
+    .question {
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .answer-btn {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .answer-btn:hover {
+      background-color: #0056b3;
+    }
+    .correct {
+      background-color: #28a745;
+    }
+    .incorrect {
+      background-color: #dc3545;
+    }
+    #exit-btn {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #exit-btn:hover {
+      background-color: #0056b3;
+    }
+    /* 구글 애드센스 위치를 위한 스타일 */
+    .ads-container {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    /* 모바일 최적화 */
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+        padding: 15px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .question {
+        font-size: 18px;
+      }
+      .answer-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>매일 퀴즈 도전!</h1>
+    <p>오늘의 퀴즈에 도전하고, 점수를 기록하세요! 매일 새로운 문제로 도전하고 재미를 느껴보세요.</p>
+
+    <div class="question-container">
+      <div class="question" id="question"></div>
+      <div id="answers"></div>
+      <div id="result"></div>
+    </div>
+
+    <button id="exit-btn" onclick="exitSite()">게임 끝내기</button>
+  </div>
+
+  <!-- 구글 애드센스 -->
+  <div class="ads-container">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9288770962100185"
+            crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-9288770962100185"
+        data-ad-slot="6399153707"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <script>
+    // 1000개 문제 예시
+    const quizData = [
+      { question: "다음 중 대한민국의 수도는?", answers: ["서울", "부산", "대구", "인천"], correct: 0 },
+      { question: "지구에서 가장 큰 대륙은?", answers: ["아시아", "아프리카", "북미", "유럽"], correct: 0 },
+      { question: "우리나라의 국화는?", answers: ["무궁화", "장미", "튤립", "백합"], correct: 0 },
+      { question: "컴퓨터의 CPU는 무엇을 의미하나요?", answers: ["중앙처리장치", "기억장치", "입력장치", "출력장치"], correct: 0 },
+      { question: "인류 최초의 비행기는?", answers: ["라이트 형제", "찰리 채플린", "헨리 포드", "에디슨"], correct: 0 },
+      { question: "대한민국의 대표적인 전통 음식은?", answers: ["김치", "타코", "초밥", "파스타"], correct: 0 },
+      { question: "영국의 수도는?", answers: ["런던", "파리", "뉴욕", "로마"], correct: 0 },
+      { question: "유럽에서 가장 큰 나라는?", answers: ["러시아", "독일", "프랑스", "이탈리아"], correct: 0 },
+      { question: "세계에서 가장 긴 강은?", answers: ["나일강", "아마존강", "양쯔강", "미시시피강"], correct: 0 },
+      { question: "인간의 평균 체온은?", answers: ["37도", "36도", "38도", "39도"], correct: 0 },
+      { question: "북극은 어떤 대륙에 위치하나요?", answers: ["북극", "남극", "아시아", "유럽"], correct: 0 },
+      { question: "우리나라의 가장 높은 산은?", answers: ["한라산", "백두산", "설악산", "지리산"], correct: 1 },
+      { question: "최초의 인류는 어디에서 나타났나요?", answers: ["아프리카", "유럽", "아시아", "미국"], correct: 0 },
+      { question: "세계에서 가장 큰 바다는?", answers: ["태평양", "대서양", "인도양", "북극해"], correct: 0 },
+      { question: "가장 가까운 별은?", answers: ["태양", "알파 센타우리", "시리우스", "북극성"], correct: 0 },
+      { question: "세계에서 가장 큰 섬은?", answers: ["그린란드", "뉴기니", "보르네오", "아프리카"], correct: 0 },
+      { question: "지구의 연대기는 얼마나 될까요?", answers: ["45억 년", "50억 년", "55억 년", "60억 년"], correct: 0 },
+      { question: "컴퓨터의 기본 구성 요소는?", answers: ["CPU, 메모리, 저장장치", "마우스, 키보드", "디스플레이, 스피커", "모니터, 프린터"], correct: 0 },
+      { question: "지구의 기온은 평균 몇 도인가요?", answers: ["15도", "20도", "25도", "30도"], correct: 0 },
+      { question: "어떤 나라가 첫 번째로 달에 착륙했나요?", answers: ["미국", "소련", "중국", "인도"], correct: 0 },
+      { question: "세계에서 가장 많은 사람을 가진 나라는?", answers: ["중국", "인도", "미국", "브라질"], correct: 0 },
+      { question: "태양계에서 가장 큰 행성은?", answers: ["목성", "지구", "금성", "화성"], correct: 0 },
+      { question: "파리의 유명한 랜드마크는?", answers: ["에펠탑", "루브르 박물관", "빅벤", "콜로세움"], correct: 0 },
+      { question: "서울에 있는 유명한 궁궐은?", answers: ["경복궁", "창덕궁", "덕수궁", "경희궁"], correct: 0 },
+      { question: "피자의 원산지는?", answers: ["이탈리아", "프랑스", "미국", "스페인"], correct: 0 },
+      { question: "영화 '타이타닉'의 주인공 배우는?", answers: ["레오나르도 디카프리오", "브래드 피트", "조니 뎁", "마트 데이먼"], correct: 0 },
+      { question: "고양이와 개 중 더 오래 사는 동물은?", answers: ["고양이", "개", "동일", "없다"], correct: 0 },
+      { question: "영국의 유명한 축구팀은?", answers: ["맨체스터 유나이티드", "레알 마드리드", "바르셀로나", "아스날"], correct: 0 },
+      { question: "한국의 가장 오래된 사원은?", answers: ["불국사", "조계사", "해인사", "마곡사"], correct: 0 },
+      { question: "파란색의 보석은?", answers: ["사파이어", "루비", "에메랄드", "다이아몬드"], correct: 0 },
+      { question: "지구상에서 가장 높은 산은?", answers: ["에베레스트", "K2", "킬리만자로", "안나푸르나"], correct: 0 },
+      { question: "지구의 자전 주기는 얼마나 되나요?", answers: ["24시간", "48시간", "12시간", "72시간"], correct: 0 },
+      { question: "세계에서 가장 큰 도시인 도시는?", answers: ["도쿄", "뉴욕", "상하이", "델리"], correct: 0 },
+      { question: "화산이 가장 많이 분출하는 지역은?", answers: ["환태평양 조산대", "알프스", "히말라야", "안데스"], correct: 0 },
+      { question: "신경계를 제어하는 뇌의 부분은?", answers: ["대뇌", "소뇌", "척수", "뇌간"], correct: 0 },
+      { question: "우주에서 가장 가까운 행성은?", answers: ["금성", "화성", "수성", "목성"], correct: 0 },
+      { question: "화학 원소 중 가장 많은 원자는?", answers: ["수소", "산소", "탄소", "질소"], correct: 0 },
+      { question: "가장 오래된 문명 중 하나는?", answers: ["메소포타미아", "로마", "그리스", "중국"], correct: 0 },
+      { question: "세계에서 가장 긴 벽은?", answers: ["중국의 만리장성", "베를린 장벽", "하드리안 장벽", "알프스 산맥"], correct: 0 },
+      { question: "우리나라의 대표적인 의류 브랜드는?", answers: ["유니클로", "삼성물산", "롯데백화점", "신세계백화점"], correct: 0 },
+      { question: "세계에서 가장 높은 빌딩은?", answers: ["부르즈 할리파", "엠파이어 스테이트 빌딩", "시어스 타워", "자하 하디드"], correct: 0 },
+      { question: "가장 큰 디지털 회사는?", answers: ["애플", "삼성", "구글", "마이크로소프트"], correct: 0 },
+      { question: "디지털 카메라의 대표 브랜드는?", answers: ["캐논", "소니", "니콘", "파나소닉"], correct: 0 },
+      { question: "청바지의 창시자는?", answers: ["리바이스", "갭", "디즈니", "에이치앤엠"], correct: 0 },
+      { question: "바다에서 가장 깊은 곳은?", answers: ["마리아나 해구", "아이슬란드", "대서양", "남극"], correct: 0 },
+      { question: "대한민국의 첫 번째 대통령은?", answers: ["이승만", "박정희", "김대중", "노무현"], correct: 0 },
+      { question: "대한민국의 첫 번째 여성 대통령은?", answers: ["박근혜", "김영삼", "노태우", "문재인"], correct: 0 },
+      { question: "세계에서 가장 많이 팔린 스마트폰 브랜드는?", answers: ["애플", "삼성", "화웨이", "샤오미"], correct: 0 },
+      { question: "대표적인 고대 그리스의 철학자는?", answers: ["소크라테스", "플라톤", "아리스토텔레스", "피타고라스"], correct: 0 },
+      { question: "가장 많은 종류의 언어가 사용되는 나라?", answers: ["인도", "중국", "미국", "브라질"], correct: 0 },
+      { question: "인류의 첫 번째 왕은?", answers: ["길가메시", "알렉산더 대왕", "황제 율리우스", "모세"], correct: 0 },
+      { question: "세계에서 가장 빠른 동물은?", answers: ["페르시안 타이거", "회색 돌고래", "사자", "스위프트"], correct: 0 },
+      { question: "우주에서 가장 뜨거운 별은?", answers: ["블루 슈퍼자이언트", "블랙홀", "백색왜성", "적색왜성"], correct: 0 },
+      { question: "대한민국의 초대 대통령은?", answers: ["이승만", "박정희", "김대중", "노무현"], correct: 0 },
+      { question: "세계에서 가장 큰 사막은?", answers: ["사하라 사막", "고비 사막", "아라비아 사막", "호주 사막"], correct: 0 },
+      { question: "미국의 국가명은?", answers: ["United States of America", "Canada", "Mexico", "Brazil"], correct: 0 }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    // 퀴즈 렌더링
+    function renderQuestion() {
+      if (currentQuestion < quizData.length) {
+        const quiz = quizData[currentQuestion];
+        const questionElem = document.getElementById('question');
+        const answersElem = document.getElementById('answers');
+        const resultElem = document.getElementById('result');
+
+        questionElem.textContent = quiz.question;
+        answersElem.innerHTML = '';
+        resultElem.innerHTML = '';
+
+        quiz.answers.forEach((answer, index) => {
+          const btn = document.createElement('button');
+          btn.textContent = answer;
+          btn.className = 'answer-btn';
+          btn.onclick = () => checkAnswer(index);
+          answersElem.appendChild(btn);
+        });
+      } else {
+        showScore();
+      }
+    }
+
+    // 정답 확인
+    function checkAnswer(selected) {
+      const quiz = quizData[currentQuestion];
+      const resultElem = document.getElementById('result');
+      const answersElem = document.getElementById('answers');
+      
+      if (selected === quiz.correct) {
+        score++;
+        resultElem.innerHTML = `<p class="correct">정답입니다!</p>`;
+      } else {
+        resultElem.innerHTML = `<p class="incorrect">틀렸습니다. 정답은 "${quiz.answers[quiz.correct]}"입니다.</p>`;
+      }
+
+      currentQuestion++;
+      setTimeout(() => renderQuestion(), 500); // 2초 후 다음 문제로 넘어갑니다.
+    }
+
+    // 점수 보여주기
+    function showScore() {
+      document.getElementById('question').textContent = `퀴즈 끝! 점수는 ${score}점 입니다.`;
+      document.getElementById('answers').innerHTML = `<button class="answer-btn" onclick="location.reload()">다시 도전하기</button>`;
+    }
+
+    // 게임 끝내기
+    function exitSite() {
+      window.location.href = "https://www.google.com"; // 구글로 리다이렉션
+    }
+
+    // 사이트 로드 시 첫 퀴즈 렌더링
+    $(document).ready(function() {
+      renderQuestion();
+    });
+  </script>
+
+</body>
+</html>
