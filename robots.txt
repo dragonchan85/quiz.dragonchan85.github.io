@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /private/
 Allow: /
 
-Sitemap: https://dragonchan85.github.io/quiz/sitemap.xml
+Sitemap: https://quiz.yesnomark.com/sitemap.xml
